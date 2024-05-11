@@ -1,5 +1,3 @@
-%% Ball and beam control
-%% Guel Cortez 2024
 ms = 0.1; % "Mass of ball"
 rs = 0.015; %"Radius of the ball"
 g = -9.8; % "Gravitational Acceleration"
@@ -9,9 +7,11 @@ Is = (2/5)*ms*rs^2; %"Sphere's moment of Inertia"
 A=[[0,1,0,0];[0,0,-ms*g/(Ib+ms),0];[0,0,0,1];[-5*g/7,0,0,0]];
 B=[0,1/(Ib+ms),0,0]';
 C=[[1,0,0,0],[0,0,1,0]];
-
+%Q=eye(4);Q(1,1)=500; Q(2,2)=100; Q(3,3)=100; Q(4,4)=50;
+%R=10;
+%K_feedback = lqr(A,B,Q,R)
 dt=0.01;
-tf=200;
+tf=1000;
 t=0:dt:tf;
 n_states=4;
 x=zeros(n_states,length(t));
@@ -21,7 +21,8 @@ dx=zeros(n_states,length(t));
 u=zeros(1,length(t));
 %p=[-7,-6,-10,-15]
 %K_feedback=place(A,B,p);
-K_feedback=[9.7000e+08,1.7000e+08,1.8000e+08,2.9571e+08];
+K_feedback=[4.8514e+04,9.8503e+05,4.2906e+00,2.1423e+02]; %LQR
+%K_feedback=[9.7000e+08,1.7000e+08,1.8000e+08,2.9571e+08]; %Pole placement
 dx(:,1)=[0,0,0.03,0]';
 x(:,1)=[0,0,1.3,0]';
 for k=2:length(t)
@@ -54,7 +55,7 @@ subplot(2,2,4)
 plot(t,dx(4,:))
 xlabel("$t$",Interpreter="latex");
 ylabel("$\dot{r}$",Interpreter="latex");
-
+sgtitle('Linearisarion over equilibrium system');
 
 figure
 subplot(2,2,1)
@@ -73,3 +74,7 @@ subplot(2,2,4)
 plot(t,x(4,:))
 xlabel("$t$",Interpreter="latex");
 ylabel("$\dot{r}$",Interpreter="latex");
+sgtitle('Nonlinear system');
+figure
+plot(t,tau)
+sgtitle('Nonlinear system force');
