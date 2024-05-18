@@ -1,11 +1,11 @@
 %% Receding Horizon
 %for graphics
-N=10; %experimentation time
-xm=zeros(1,N);
-x=zeros(2,N);
-y=zeros(1,N);
-u=zeros(1,N);
-du=zeros(1,N);
+L=15; %experimentation time
+xm=zeros(1,L);
+x=zeros(2,L);
+y=zeros(1,L);
+u=zeros(1,L);
+du=zeros(1,L);
 
 %initial conditions
 xm(1)=0.2;
@@ -53,7 +53,7 @@ Rs=ones(Np,1)*rki;
 R=0*eye(Nc);
 
 % Receding horizon
-for k=2:N
+for k=2:L
     u(k)=u(k-1)+du(k-1);
     xm(k)=Am*xm(k-1)+Bm*u(k); %system 
     dx=xm(k)-xm(k-1);
