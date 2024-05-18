@@ -1,17 +1,20 @@
-%% Receding Horizon MPC for LTI systems
-% Adrian Cortez 2024
+%% Receding Horizon
+%for graphics
+N=10; %experimentation time
+xm=zeros(1,N);
+x=zeros(2,N);
+y=zeros(1,N);
+u=zeros(1,N);
+du=zeros(1,N);
 
-xm=zeros(1,Np);
-x=zeros(2,Np);
-y=zeros(1,Np);
-u=zeros(1,Np);
-du=zeros(1,Np);
+%initial conditions
 xm(1)=0.2;
-y(1)=0.2;
+y(1)=0.2; % output of extended system
 dx=0.1;
 x(:,1)=[dx,y(1)]';
 u(1)=0;
 du(1)=7.2;
+% model parameters
 a=0.8;b=0.1;c=1;Np=10;Nc=4;
 Am=a;
 Bm=b;
@@ -42,14 +45,17 @@ for Nu=1:Nc
     Phi=[Phi;vaux];
 end
 Phi=reshape(Phi,Np,Nc);
+
+%reference
 rki=1;
 
 Rs=ones(Np,1)*rki;
 R=0*eye(Nc);
 
-for k=2:Np
+% Receding horizon
+for k=2:N
     u(k)=u(k-1)+du(k-1);
-    xm(k)=Am*xm(k-1)+Bm*u(k);
+    xm(k)=Am*xm(k-1)+Bm*u(k); %system 
     dx=xm(k)-xm(k-1);
     y(k)=xm(k);
     xki=[dx,y(k)]';
