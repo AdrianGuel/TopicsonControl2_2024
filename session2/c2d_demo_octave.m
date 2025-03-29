@@ -1,6 +1,8 @@
 %% pkg install -forge control % use this line of code before loading the package for the first time ever
+%% pkg install -forge signal
 
 pkg load control  % load package
+pkg load signal  % tf2ss está aquí
 
 % Define a transfer function: G(s) = 1 / (s^2 + 3s + 2)
 num = [1];
