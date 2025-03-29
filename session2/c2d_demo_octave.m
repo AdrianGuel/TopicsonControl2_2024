@@ -1,4 +1,6 @@
-pkg load control  % Asegúrate de tener este paquete instalado
+%% pkg install -forge control % use this line of code before loading the package for the first time ever
+
+pkg load control  % load package
 
 % Define a transfer function: G(s) = 1 / (s^2 + 3s + 2)
 num = [1];
