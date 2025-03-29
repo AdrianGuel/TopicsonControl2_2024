@@ -21,3 +21,8 @@ Compare:
 Response to delayed input (y_LTI_ID, y_LTV_ID).
 
 Delayed output of the original system (y_LTI_OD, y_LTV_OD).
+
+Results
+LTI System: The plots for Delayed u(t) and Delayed y(t) will coincide, confirming time-invariance.
+
+LTV System: The plots will diverge, confirming time-variance.
