@@ -39,12 +39,12 @@ $$T\left[u_1(t) + u_2(t)\right] = T\left[u_1(t)\right] + T\left[u_2(t)\right]$$
   ```
 
 ### Analysis Steps
-1. Solve ODEs for both systems using `lsode` for individual inputs \( u_1(t) \) and \( u_2(t) \).
-2. Compute the **sum of outputs** (\( y_{SO} = y_1 + y_2 \)).
-3. Solve ODEs for the **sum of inputs** (\( u_1(t) + u_2(t) \)).
+1. Solve ODEs for both systems using `lsode` for individual inputs $u_1(t)$ and $u_2(t)$.
+2. Compute the **sum of outputs** $y_{SO} = y_1 + y_2$
+3. Solve ODEs for the **sum of inputs** $u_1(t) + u_2(t)$
 4. Compare:
-   - Sum of individual outputs (\( y_{SO} \)).
-   - Output for the summed inputs (\( y_{SI} \)).
+   - Sum of individual outputs $y_{SO}$.
+   - Output for the summed inputs $y_{SI}$.
 
 ## Usage
 1. Run the script in Octave:
