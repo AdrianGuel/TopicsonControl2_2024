@@ -1,4 +1,5 @@
-  % Parameters
+function cart_pendulum_animation()
+% Parameters
     g = 9.81;       % Gravity (m/s^2)
     L = 1;          % Length of pendulum (m)
     m = 1;          % Mass of pendulum (kg)
