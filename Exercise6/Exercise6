@@ -1,0 +1,122 @@
+% Ball rolling from an unstable peak in 3D with animation
+% This simulation uses a smooth function to represent the terrain
+% and animates the ball's motion due to gravitational forces
+
+% Define simulation parameters
+g = 9.81;       % Gravitational acceleration (m/s^2)
+m = 0.1;          % Mass of the ball (kg)
+tmax = 10;      % Maximum simulation time (s)
+dt = 0.01;      % Time step (s)
+damping = 0.5;  % Damping coefficient (friction)
+
+% Create a smooth peak/valley function
+% z = -a*(x^2 + y^2) + b*exp(-c*(x^2 + y^2))
+% This creates a smooth peak that transitions to a valley
+a = 0.01;        % Bowl curvature
+b = 10;         % Peak height
+c = 0.05;        % Peak width control
+
+% Function that defines the surface height z(x,y)
+terrain = @(x, y) -a*(x.^2 + y.^2) + b*exp(-c*(x.^2 + y.^2));
+
+% Partial derivatives for calculating forces
+dz_dx = @(x, y) -2*a*x - 2*c*b*x.*exp(-c*(x.^2 + y.^2));
+dz_dy = @(x, y) -2*a*y - 2*c*b*y.*exp(-c*(x.^2 + y.^2));
+
+% Initial conditions - start near the unstable peak with small perturbation
+x0 = 0.1;       % Initial x position (m)
+y0 = 0;       % Initial y position (m)
+vx0 = 35;        % Initial x velocity (m/s)
+vy0 = 35;        % Initial y velocity (m/s)
+
+% Create state vector [x, y, vx, vy]
+state = [x0; y0; vx0; vy0];
+
+% Preallocate arrays for storing simulation results
+steps = round(tmax/dt);
+t_array = zeros(1, steps);
+x_array = zeros(1, steps);
+y_array = zeros(1, steps);
+z_array = zeros(1, steps);
+vx_array = zeros(1, steps);
+vy_array = zeros(1, steps);
+
+% Store initial conditions
+t_array(1) = 0;
+x_array(1) = x0;
+y_array(1) = y0;
+z_array(1) = terrain(x0, y0);
+vx_array(1) = vx0;
+vy_array(1) = vy0;
+
+% Run simulation using Euler method
+for i = 10:steps
+    % Current state
+    x = state(1);
+    y = state(2);
+    vx = state(3);
+    vy = state(4);
+
+    % Calculate forces based on the slope of the terrain
+    Fx = -m * g * dz_dx(x, y) - damping * vx;
+    Fy = -m * g * dz_dy(x, y) - damping * vy;
+
+    % Calculate accelerations
+    ax = Fx / m;
+    ay = Fy / m;
+
+    % Update state using Euler integration
+    state = state + dt * [vx; vy; ax; ay];
+
+    % Store results
+    t_array(i) = (i-1) * dt;
+    x_array(i) = state(1);
+    y_array(i) = state(2);
+    z_array(i) = terrain(state(1), state(2));
+    vx_array(i) = state(3);
+    vy_array(i) = state(4);
+end
+
+% Create meshgrid for plotting the terrain surface
+[X, Y] = meshgrid(linspace(-10, 10, 50), linspace(-10, 10, 50));
+Z = terrain(X, Y);
+
+% Create figure for the 3D animation
+figure('Position', [100, 100, 800, 600]);
+h_surf = surf(X, Y, Z, 'EdgeColor', 'none', 'FaceAlpha', 0.7);
+hold on;
+
+% Plot the complete trajectory line for reference
+h_path = plot3(x_array, y_array, z_array, 'r-', 'LineWidth', 1.5);
+% Initial position of the ball
+h_ball = plot3(x_array(1), y_array(1), z_array(1), 'ro', 'MarkerSize', 15, 'MarkerFaceColor', 'r');
+
+colormap('winter');
+title('Ball Rolling from Unstable Peak', 'FontSize', 14);
+xlabel('X Position (m)');
+ylabel('Y Position (m)');
+zlabel('Z Position (m)');
+grid on;
+view(30, 30);
+axis([-10 10 -10 10 -10 15]);
+view(30, 55);
+
+% Animation settings
+animation_step = 5;  % Update animation every N simulation steps
+pause_time = 0.01;    % Pause time between animation frames
+
+for i = 1:animation_step:steps
+    % Update ball position
+    set(h_ball, 'XData', x_array(i), 'YData', y_array(i), 'ZData', z_array(i));
+
+    % Optional: Plot a trail behind the ball (last N points)
+    trail_length = 100;
+    start_idx = max(1, i - trail_length);
+    set(h_path, 'XData', x_array(start_idx:i), 'YData', y_array(start_idx:i), 'ZData', z_array(start_idx:i));
+
+    % Update the title with current time
+    title(sprintf('Ball Rolling from Unstable Peak (t = %.2f s)', t_array(i)), 'FontSize', 14);
+
+    drawnow;
+    pause(pause_time);
+end
