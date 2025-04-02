@@ -10,22 +10,16 @@ This repository contains an Octave script that visualizes the phase space trajec
 ## Key Equations
 ### Second-Order System
 The system is defined by:
-\[
-\ddot{x}(t) + 0.5\dot{x}(t) + 0.5x(t) = \sin(t)
-\]
+$$\ddot{x}(t) + 0.5\dot{x}(t) + 0.5x(t) = \sin(t)$$
 Converted to first-order form:
-\[
-\begin{cases}
-\dot{y}_1 = y_2 \\
-\dot{y}_2 = -0.5y_2 - 0.5y_1 + \sin(t)
-\end{cases}
-\]
-where \( y_1 = x(t) \) (position) and \( y_2 = \dot{x}(t) \) (velocity).
+
+$$\dot{y}_1 = y_2$$
+$$\dot{y}_2 = -0.5y_2 - 0.5y_1 + \sin(t)$$
+
+where $y_1 = x(t)$ (position) and $y_2 = \dot{x}(t)$ (velocity).
 
 ### Initial Conditions
-\[
-x(0) = 0.5, \quad \dot{x}(0) = 1
-\]
+$$x(0) = 0.5, \quad \dot{x}(0) = 1$$
 
 ## Code Overview
 ### System Definition
@@ -37,9 +31,9 @@ sol = lsode(f, y0, t_total);       % Solve numerically
 ```
 
 ### Animation Setup
-- **Subplot 1**: \( x(t) \) vs. \( t \) (position time series).
-- **Subplot 2**: Phase space (\( x(t) \) vs. \( \dot{x}(t) \)).
-- **Subplot 3**: \( \dot{x}(t) \) vs. \( t \) (velocity time series).
+- **Subplot 1**: $x(t)$ vs. $t$ (position time series).
+- **Subplot 2**: Phase space $x(t)$ vs. $\dot{x}(t)$.
+- **Subplot 3**: $\dot{x}(t)$ vs. $t$ (velocity time series).
 - Real-time markers (red circles) track the current state.
 
 ## Usage
@@ -57,4 +51,4 @@ sol = lsode(f, y0, t_total);       % Solve numerically
 - **Time-Domain Plots**: Show transient oscillations converging to a steady-state response.
 - **Key Observations**:
   - Initial conditions affect the transient path but not the steady-state behavior.
-  - The system exhibits damped oscillations modulated by the external \( \sin(t) \) input.
+  - The system exhibits damped oscillations modulated by the external $\sin(t)$ input.
