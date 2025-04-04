@@ -11,7 +11,7 @@ This repository contains an Octave script that visualizes the phase space trajec
 ### Second-Order System
 The system is defined by:
 $$\ddot{x}(t) + 0.5\dot{x}(t) + 0.5x(t) = \sin(t)$$
-
+### <<<<<<< patch-2=======>>>>>>> main
 Converted to first-order form:
 
 $$\dot{y}_1 = y_2$$
@@ -20,7 +20,7 @@ $$\dot{y}_2 = -0.5y_2 - 0.5y_1 + \sin(t)$$
 where $y_1 = x(t)$ (position) and $y_2 = \dot{x}(t)$ (velocity).
 
 ### Initial Conditions
-
+### <<<<<<< patch-2 =======>>>>>>> main
 $$x(0) = 0.5, \quad \dot{x}(0) = 1$$
 
 ## Code Overview
