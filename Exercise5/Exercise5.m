@@ -7,10 +7,11 @@
 % \dot{y1} = y2
 % \dot{y2} = -0.5*y2 - 0.5*y1 + sin(t)
 % Definir el sistema de ecuaciones
+pkg load symbolic
 f = @(y, t) [y(2);             % Primera ecuación: dy1/dt = y2
              -0.5*y(2) - 0.5*y(1) + sin(t)]; % Segunda ecuación
 % Condiciones iniciales [x0; x'_0]
-y0 = [1; 0];  % x(0) = 0.5, x'(0) = 0
+y0 = [-1; 10];  % x(0) = 0.5, x'(0) = 0
 % Configurar tiempo de integración
 t_total = linspace(0, 20, 1000)';  % Vector temporal columna
 % Resolver el sistema
@@ -39,8 +40,16 @@ grid on;
 
 % Espacio de fase
 subplot(2,2,2);
-h2 = plot(x_total(1), xprime_total(1), 'b', 'LineWidth', 1.5);
 hold on;
+% Crear malla de puntos en el espacio de fase
+[x, xp] = meshgrid(linspace(x_lims(1), x_lims(2), 20), linspace(xp_lims(1), xp_lims(2), 20));
+% Evaluar el campo vectorial en cada punto de la malla
+U = xp;  % dx/dt = x'
+V = -0.5*xp - 0.5*x ;  % dx'/dt evaluado en t=0
+
+% Dibujar los vectores del campo
+quiver(x, xp, U, V, 'k', 'AutoScale', 'on');
+h2 = plot(x_total(1), xprime_total(1), 'b', 'LineWidth', 1.5);
 h2_marker = plot(x_total(1), xprime_total(1), 'ro', 'MarkerFaceColor', 'r');
 title('Espacio de Fase');
 xlabel('x(t)'); ylabel("x'(t)");
