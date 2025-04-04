@@ -1,0 +1,66 @@
+% Configuración inicial
+pkg load control;
+clear all;
+
+% Definir el sistema lineal estable (A Hurwitz)
+A = [-1 2; 0 -3];  % Ejemplo: matriz estable
+
+% Resolver la ecuación de Lyapunov A'P + PA = -Q (con Q = I)
+Q = eye(2);
+P = lyap(A', Q);
+
+% Condición inicial
+x0 = [3; 3];  % Estado inicial
+
+% Simular la trayectoria
+t = 0:0.1:5;  % Vector de tiempo
+[~, x] = ode45(@(t, x) A*x, t, x0);  % Solución numérica
+
+% Calcular la cota para ||x(t)||
+lambda_max = max(eig(P));
+lambda_min = min(eig(P));
+V0 = x0'*P*x0;
+x_bound = sqrt(V0/lambda_min) * exp(-t/(2*lambda_max));
+
+% Crear la figura
+fig = figure;
+hold on;
+grid on;
+xlabel('x_1');
+ylabel('x_2');
+title('Trayectoria y cotas de Lyapunov (bucle continuo)');
+
+% Graficar curvas de nivel de V(x) = c
+[x1, x2] = meshgrid(-4:0.1:4, -4:0.1:4);
+V_grid = zeros(size(x1));
+for i = 1:size(x1, 1)
+    for j = 1:size(x1, 2)
+        X = [x1(i,j); x2(i,j)];
+        V_grid(i,j) = X'*P*X;
+    end
+end
+levels = linspace(0.1, 10, 5);
+contour(x1, x2, V_grid, levels, 'LineWidth', 1, 'ShowText', 'on');
+
+% Inicializar gráficos
+traj_plot = plot(x(1,1), x(1,2), 'r', 'LineWidth', 2);
+bound_plot = plot(NaN, NaN, 'b', 'LineWidth', 2);  % Placeholder para la cota
+legend('Cota de Lyapunov','Trayectoria');
+
+% Bucle de animación (se repite hasta cerrar la ventana)
+while ishandle(fig)
+    for k = 1:length(t)
+        if ~ishandle(fig), break; end  % Salir si se cierra la ventana
+
+        % Actualizar trayectoria
+        set(traj_plot, 'XData', x(1:k,1), 'YData', x(1:k,2));
+
+        % Actualizar cota (círculo basado en x_bound)
+        theta = 0:0.01:2*pi;
+        x_circle = x_bound(k) * cos(theta);
+        y_circle = x_bound(k) * sin(theta);
+        set(bound_plot, 'XData', x_circle, 'YData', y_circle);
+
+        pause(0.05);  % Pausa para la animación
+    end
+end
