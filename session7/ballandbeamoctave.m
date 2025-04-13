@@ -1,3 +1,7 @@
+%% pkg install -forge control %Install the Control package (if not already installed):
+%% pkg load control %Load the package before using lqr or place:
+%% Then run the code:
+
 ms = 0.1; % "Mass of ball"
 rs = 0.015; %"Radius of the ball"
 g = -9.8; % "Gravitational Acceleration"
