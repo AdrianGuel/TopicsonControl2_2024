@@ -1,0 +1,446 @@
+# 1. Newton’s Second Law for Rotation
+
+For any rigid body rotating about a pivot, Newton’s second law takes the form  
+
+$$
+I \ddot{\theta} = \sum \tau
+$$  
+
+where:  
+
+- $I$ is the total moment of inertia,  
+- $\theta$ is the rotation angle,  
+- $\sum \tau$ is the sum of the torques acting on the system.  
+
+Express each term of the torque sum and then divide by $I$ to isolate $\ddot{\theta}$.  
+
+---
+
+# 2. Gravitational Torque via the 2D Cross Product  
+### a. **The Setup**  
+
+Assume two point masses $m_1$ and $m_2$ are attached at the ends of a beam (or seesaw) of length $L$. If the pivot is at the beam’s center, each mass is located at a distance $r = L/2$ from the pivot.  
+
+### b. **Using the Cross Product**  
+
+The gravitational force on each mass is $\mathbf{F}_g$ directed downward. The position vectors from the pivot to each mass are:  
+
+$$
+\mathbf{F}_g = \begin{pmatrix} 
+0 \\ 
+-m_i g 
+\end{pmatrix}, \quad \mathbf{r}_1 = \begin{pmatrix} 
+-\frac{L}{2}\cos\theta \\ 
+-\frac{L}{2}\sin\theta 
+\end{pmatrix}, \quad \mathbf{r}_2 = \begin{pmatrix} 
+\frac{L}{2}\cos\theta \\ 
+\frac{L}{2}\sin\theta 
+\end{pmatrix}.
+$$  
+
+The choice of sign is made for convenience so that the gravitational term "supports" or "resists" depending on the difference in masses.  
+
+In two dimensions, the torque for each mass is given by the scalar (the "z-component" of the cross product):  
+
+$$
+\tau = \mathbf{r} \times \mathbf{F} = \begin{vmatrix} 
+\mathbf{i} & \mathbf{j} & \mathbf{k} \\ 
+x & y & 0 \\ 
+F_x & F_y & 0 
+\end{vmatrix} = x F_y - y F_x.
+$$  
+
+For mass $m_1$ (located at $-\frac{L}{2}$ on one side):  
+
+$$
+\tau_1 = \mathbf{r}_1 \times \begin{pmatrix} 
+0 \\ 
+-m_1 g
+\end{pmatrix} = \left(-\frac{L}{2}\cos\theta \right) (-m_1 g) + \left(\frac{L}{2}\sin\theta\right)(0) = \frac{L}{2} m_1 g \cos\theta.
+$$  
+
+For mass $m_2$ (located on the opposite side):  
+
+$$
+\tau_2 = \mathbf{r}_2 \times \begin{pmatrix} 
+0 \\ 
+-m_2 g
+\end{pmatrix} = \left(\frac{L}{2}\cos\theta\right)(-m_2 g) - \left(\frac{L}{2}\sin\theta\right)(0) = -\frac{L}{2} m_2 g \cos\theta.
+$$  
+
+### c. **Net Gravitational Torque**  
+
+The net gravitational torque is then:  
+
+$$
+\tau_g = \tau_1 + \tau_2 = \frac{(m_1 - m_2)g L}{2} \cos\theta.
+$$  
+
+Thus, when we divide by $I$ (to write the angular acceleration), the gravitational term becomes:  
+
+$$
+\tau_g = \gamma \cos\theta, \quad \gamma = \frac{(m_1 - m_2)g L}{2 I}.
+$$  
+
+---
+
+# 3. Friction Torque  
+### a. **Viscous Friction**  
+
+Viscous friction is modeled as being proportional to the angular velocity, where $b$ is the viscous damping coefficient:  
+
+$$
+\tau_{\text{viscous}} = -b \dot{\theta}.
+$$  
+
+### b. **Coulomb Friction**  
+
+The Coulomb (dry) friction torque is given by:  
+
+$$
+\tau_{\text{Coulomb}} = -\mu_c N \frac{L}{2} \text{sgn}(\dot{\theta}),
+$$  
+
+where:  
+- $\mu_c$ is the Coulomb friction coefficient,  
+- $N$ is the normal force (approximated using $g$ in our gravitational context),  
+- $L/2$ is the effective lever arm.  
+
+Because the sign function $\text{sgn}(\dot{\theta})$ is discontinuous at zero, we use a smooth approximation:  
+
+$$
+\text{sgn}(\dot{\theta}) \approx \tanh\left(\frac{\dot{\theta}}{\epsilon}\right),
+$$  
+
+where $\epsilon$ is a small positive constant. This approximation facilitates numerical simulation.  
+
+Thus:  
+
+$$
+\tau_{\text{Coulomb}} \approx -\mu_c \frac{g L}{2} \tanh\left(\frac{\dot{\theta}}{\epsilon}\right).
+$$  
+
+### c. **Total Friction Torque**  
+
+$$
+\tau_{\text{friction}} = \tau_{\text{viscous}} + \tau_{\text{Coulomb}} = -b \dot{\theta} - \mu_c \frac{g L}{2} \tanh \left(\frac{\dot{\theta}}{\epsilon} \right).
+$$  
+
+When divided by the total moment of inertia $I$, the friction terms in the angular acceleration become:  
+
+$$
+\tau_{\text{friction}} = -\alpha \dot{\theta} - \beta \tanh\left(\frac{\dot{\theta}}{\epsilon}\right), \quad \alpha=\frac{b}{I}, \quad \beta=\frac{\mu_c g L}{2 I}.
+$$  
+
+---
+
+# 4. Total Moment of Inertia  
+### a. **Beam’s Moment of Inertia**  
+
+For a uniform bar (beam) of mass $m_b$ and length $L$ rotating about its center, the moment of inertia is obtained by integrating:  
+
+1. **Density**: $\lambda = m_b/L$  
+2. **Elemental mass**: $dm = \lambda dx$  
+3. **Moment contribution**: $dI = x^2 dm = x^2 \lambda dx$  
+4. **Integrate**:  
+
+$$
+I_b = \int_{-L/2}^{L/2} x^2 \lambda dx = \lambda \int_{-L/2}^{L/2} x^2 dx = \frac{m_b}{L} \frac{L^3}{12} = \frac{1}{12} m_b L^2.
+$$  
+
+### b. **Point Masses’ Moments of Inertia**  
+
+Each point mass $m_i$ located at a distance $r = L/2$ from the pivot contributes:  
+
+$$
+I_i = m_i \left(\frac{L}{2}\right)^2 = \frac{1}{4} m_i L^2.
+$$  
+
+Thus, for both masses:  
+
+$$
+I_{\text{points}} = \frac{1}{4} (m_1 + m_2) L^2.
+$$  
+
+### c. **Total Moment of Inertia**  
+
+Adding the beam’s and the point masses’ moments of inertia gives:  
+
+$$
+I = I_b + I_{\text{points}} = \frac{1}{12} m_b L^2 + \frac{1}{4} (m_1 + m_2) L^2.
+$$  
+
+---
+
+# 5. Adding the Control Force Torque  
+
+To include the contribution of a **control force $F$** generated by a **drone motor fixed vertically** on one end of the beam (e.g., at $x = \frac{L}{2}$), we analyze the **torque generated** by that force around the pivot.  
+
+We start from the general expression in scalar 2D form:  
+
+$$
+\tau = x F_y - y F_x.
+$$  
+
+Alternatively, torque magnitude in terms of the angle between the vectors is:  
+
+$$
+\tau = r \cdot F \cdot \sin(\theta_{\text{rel}}),
+$$  
+
+where:  
+- $r = \|\mathbf{r}\| = \frac{L}{2}$ is the distance from the pivot to the point where the force is applied,  
+- $F = \|\mathbf{F}\|$,  
+- $\theta_{\text{rel}}$ is the angle between $\mathbf{r}$ and $\mathbf{F}$.  
+
+#### In our system:  
+- The motor is mounted **perpendicular to the beam** in the **vertical direction**, and thus, $\mathbf{F} = (0, F)$ in the beam's reference frame.  
+- The point of application is at $\mathbf{r} = (-\frac{L}{2}, 0)$, i.e., the left end of the beam.  
+- The angle between $\mathbf{r}$ and $\mathbf{F}$ is exactly $90^\circ$, so $\sin(\theta_{\text{rel}}) = 1$.  
+
+Then:  
+
+$$
+\tau_\text{control} = \frac{L}{2} \cdot F \cdot \sin(90^\circ) = \frac{L}{2} \cdot F.
+$$  
+
+Dividing both sides by $I$, we define $\delta = L/(2I)$:  
+
+$$
+\tau_{\text{control}} = \delta F.
+$$  
+
+---
+
+# 6. Assembling the Equation  
+
+Writing Newton’s second law with all the torques:  
+
+$$
+I \ddot{\theta} = -b \dot{\theta} - \mu_c \frac{g L}{2} \tanh\left(\frac{\dot{\theta}}{\epsilon}\right) + \frac{(m_1-m_2)g L}{2} \cos\theta + \frac{L}{2} F.
+$$  
+
+Dividing through by $I$ gives:  
+
+$$
+\ddot{\theta} = -\frac{b}{I} \dot{\theta} - \frac{\mu_c g L}{2 I} \tanh\left(\frac{\dot{\theta}}{\epsilon}\right) + \frac{(m_1-m_2)g L}{2 I} \cos\theta + \delta F.
+$$  
+
+With the constant definitions:  
+
+$$
+\alpha = \frac{b}{I}, \quad \beta = \frac{\mu_c g L}{2 I}, \quad \gamma = \frac{(m_1-m_2)g L}{2 I}, \quad \delta = \frac{L}{2 I},
+$$  
+
+this becomes:  
+
+$$
+\ddot{\theta} + \alpha \dot{\theta} + \beta \tanh\left(\frac{\dot{\theta}}{\epsilon}\right) = \gamma \cos\theta + \delta F.
+$$  
+
+---
+
+# 7. State-Space Representation  
+
+To express the model in state-space form, define the state vector:  
+
+$$
+\mathbf{x} = \begin{pmatrix} 
+x_1 \\ 
+x_2 
+\end{pmatrix} = \begin{pmatrix} 
+\theta \\ 
+\dot{\theta} 
+\end{pmatrix}.
+$$  
+
+Then, the state equations are:  
+
+$$
+\boxed{
+\begin{aligned}
+\dot{x}_1 &= x_2, \\
+\dot{x}_2 &= -\alpha x_2 - \beta \tanh\left(\frac{x_2}{\epsilon}\right) + \gamma \cos x_1 + \delta F.
+\end{aligned}
+}
+$$  
+
+with the constants defined as:  
+- $\alpha = \frac{b}{I}$,  
+- $\beta = \frac{\mu_c g L}{2 I}$,  
+- $\gamma = \frac{(m_1-m_2)g L}{2 I}$,  
+- $\delta = \frac{L}{2 I}$.  
+
+---
+
+# Linearization  
+
+Consider a nonlinear system represented by:  
+
+$$
+\dot{x} = f(x, u, t), \quad y(t) = g(x, u, t),
+$$  
+
+where $x \in \mathbb{R}^n$, $u \in \mathbb{R}^m$, and $y \in \mathbb{R}^p$. To design controllers or analyze stability, we often linearize the system around an **equilibrium point** $(x_0, u_0)$.  
+
+### 1. **Find the Equilibrium Point**  
+
+Solve for $(x_0, u_0)$ such that:  
+
+$$
+f(x_0, u_0) = 0.
+$$  
+
+This ensures the system is in steady state ($\dot{x} = 0$) at the equilibrium.  
+
+### 2. **Compute Jacobian Matrices**  
+
+Approximate the system with **Jacobian matrices** evaluated at $(x_0, u_0)$:  
+
+$$
+\left[
+\begin{array}{c|c}
+A & B \\ 
+\hline C & D
+\end{array}
+\right] = 
+\left[
+\begin{array}{c|c}
+\frac{\partial f}{\partial x}  & \frac{\partial f}{\partial u} \\
+\hline \frac{\partial g}{\partial x} & \frac{\partial g}{\partial u}  
+\end{array}
+\right]_{(x_0, u_0)}
+$$
+
+### 3. **Form the Linearized System**  
+
+The linearized state-space model is:  
+
+$$
+\begin{aligned}
+\delta \dot{x} &= A \delta x + B \delta u, \\
+\delta y &= C \delta x + D \delta u,
+\end{aligned}
+$$  
+
+where:  
+- $\delta x = x - x_0$ (perturbation in state),  
+- $\delta u = u - u_0$ (perturbation in input),  
+- $\delta y = y - g(x_0, u_0)$ (perturbation in output).  
+
+---
+
+# 1. Equilibrium Points  
+
+An equilibrium point of the system is defined as a state where the derivatives of the state variables vanish. That is, when:  
+
+$$
+\dot{x}_1 = 0 \quad \text{and} \quad \dot{x}_2 = 0.
+$$  
+
+From the state-space equations, this implies:  
+
+**For the first state:**  
+
+$$
+\dot{x}_1 = x_2 = 0.
+$$  
+
+**For the second state:**  
+
+$$
+\dot{x}_2 = -\alpha x_2 - \beta \tanh\left(\frac{x_2}{\epsilon}\right) + \gamma \cos x_1 + \delta F = 0.
+$$  
+
+If no external control is applied ($F=0$) and with $x_2 = 0$, the second equation reduces to:  
+
+$$
+\gamma \cos x_1 = 0.
+$$  
+
+Thus, the equilibrium condition for $x_1$ becomes:  
+
+$$
+\cos x_1 = 0 \quad \implies \quad x_1 = \frac{\pi}{2} + k\pi, \quad k \in \mathbb{Z}.
+$$  
+
+The bar in vertical orientation corresponds to $(x_1,x_2) = (\pi/2,0)$.  
+
+Alternatively, if a constant control input $F = F_e$ is used, the equilibrium condition for $x_1$ becomes:  
+
+$$
+\gamma \cos x_1 + \delta F_e = 0 \quad \implies \quad x_1 = \cos^{-1}\left(\frac{-\delta F_e}{\gamma}\right).
+$$  
+
+By appropriately choosing $F_e$, one may shift the equilibrium to a desired configuration (e.g., $(0,0)$).  
+
+---
+
+# 2. First-Order Perturbation and Linearization  
+
+To analyze the dynamics around an equilibrium point $(x_{1,e}, x_{2,e}, F_e)$, we define small perturbations:  
+
+$$
+\begin{aligned}
+x_1 &= x_{1,e} + \Delta x_1, \\
+x_2 &= x_{2,e} + \Delta x_2, \\
+F &= F_e + \Delta F.
+\end{aligned}
+$$  
+
+Inserting these into the original nonlinear state equations and expanding in a Taylor series, we keep only the first-order (linear) terms.  
+
+The nonlinear state equations are: 
+
+$$
+f(x_1 ,x_2 , F) =
+\begin{pmatrix} 
+f_1(x_1,x_2) \\ 
+f_2(x_1,x_2,F) 
+\end{pmatrix}=
+\begin{pmatrix} 
+x_2 \\ 
+-\alpha x_2 - \beta \tanh \left(\frac{x_2}{\epsilon}\right) + \gamma \cos x_1 + \delta F 
+\end{pmatrix}
+$$
+
+Performing a Taylor series expansion around the equilibrium yields:  
+
+$$
+\Delta\dot{x} \approx A \Delta x + B \Delta F \quad , \quad A = \frac{\partial f}{\partial x}, B = \frac{\partial f}{\partial F} 
+$$
+
+evaluated at  $(x_{1,e},x_{2,e})$ 
+
+$$
+A = 
+\begin{pmatrix} 
+0 & 1 \\ 
+-\gamma \sin x_{1,e} & -\alpha - \frac{\beta}{\epsilon} \text{sech}^2\left(\frac{x_{2,e}}{\epsilon}\right) 
+\end{pmatrix}, \quad B = 
+\begin{pmatrix} 
+0 \\ 
+\delta 
+\end{pmatrix}
+$$  
+
+## 3. Shift of Initial Conditions  
+
+Since the linearization is performed about $(x_{1,e}, x_{2,e}, F_e)$, the original initial conditions are expressed as:  
+
+$$
+\Delta x(0) = 
+\begin{pmatrix} 
+x_1(0) - x_{1,e} \\ 
+x_2(0) - x_{2,e} 
+\end{pmatrix}
+$$  
+
+---
+
+# Summary  
+
+- The equilibrium points are determined by setting $\dot{x}_1 = 0$ and $\dot{x}_2 = 0$, leading to conditions such as $\cos x_1 = 0$ (or a modified version when an external control is present).  
+- The system is linearized by introducing perturbations around the equilibrium values.  
+- A first-order Taylor expansion provides the linear approximation $\Delta \dot{x} \approx A \Delta x + B \Delta F$, where the Jacobian matrices $A$ and $B$ are obtained from the partial derivatives.  
+- The initial conditions of the original system are shifted by subtracting the equilibrium point.  
