@@ -2,6 +2,8 @@
 
 This repository contains a Manim animation, developed in Jupyter Notebook, that illustrates the dynamic behavior of a seesaw (balancing beam) system. The simulation includes an animation of the system motion and a phase‐space plot of its states (angular position and angular velocity).
 
+![Imagen1](https://github.com/user-attachments/assets/8cbec655-4df8-4f57-9e25-36db37337ef0)
+
 ![output](https://github.com/user-attachments/assets/065351ed-6e69-424a-8ee1-ea7632ea35da)
 
 
