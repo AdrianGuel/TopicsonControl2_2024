@@ -70,6 +70,7 @@ $$
 
 ### Linearized Model:
 Linearization around $\theta_e, \omega_e$:
+
 $$
 \dot{x} = A x + B u
 $$
