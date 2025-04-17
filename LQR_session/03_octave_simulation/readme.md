@@ -95,15 +95,3 @@ Simply execute the script in GNU Octave. All figures will be generated, and the 
 ![Video sin título ‐ Hecho con Clipchamp](https://github.com/user-attachments/assets/811c2d90-b17a-48ca-a146-57a990ce703f)
 
 
-## 📜 License
-
-This project is released under the MIT License.
-
----
-
-Feel free to fork and adapt the script to different systems or to extend it with controllers (e.g., LQR, PID) or measurement noise to simulate real-world scenarios.
-
-Enjoy simulating dynamics!
-```
-
-Let me know if you want to include a LaTeX-formatted PDF version or an animated GIF for the GitHub README too!
