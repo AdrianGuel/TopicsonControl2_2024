@@ -1,6 +1,5 @@
-Here is the `README.md` file in **English**, ready to be copied into your GitHub repository. It explains the structure of your code, the different plot sections, and all tunable parameters. I've also included a brief description of each relevant part of the simulation:
 
-# Balancing Beam Simulation: Nonlinear vs Linearized Dynamics
+# Seesaw rotational dynamics Simulation: Nonlinear vs Linearized Dynamics
 
 This repository provides a simulation and visualization framework in **GNU Octave** for analyzing a physical balancing beam system under both **nonlinear** and **linearized** dynamic models. It includes animated plots, phase-space analysis, and an interactive vector field visualization to understand the differences between models and dynamic behavior near equilibrium points.
 
