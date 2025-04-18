@@ -3,27 +3,28 @@ clear; close all; clc;
 pkg load symbolic
 
 %% System Parameters
-m1    = 0.25;       % mass at one end [kg]
-m2    = 0.15;       % mass at the other end [kg]
+m1    = 0.2;       % mass at one end [kg]
+m2    = 0.35;       % mass at the other end [kg]
+mb    = 0.5;        % mass of the beam [kg]
 L     = 1;          % beam length [m]
 g     = 9.81;       % gravitational acceleration [m/s^2]
 b     = 0.08;       % viscous damping coefficient [N*m*s/rad]
 u_c   = 0.001;      % Coulomb friction coefficient
 u     = 0;          % control input (force or torque)
-eps   = 1e-4;       % smoothing parameter for tanh
+eps   = 1e-2;       % smoothing parameter for tanh
 
 % Precomputed constants
-mm = m1 + m2;
-aa = (4*b)/(mm*L^2);
-bb = (4*u_c*g)/L;
-cc = (2*(m1 - m2)*g)/(L*mm);
-dd = 2/(L*mm);
-bb_eps = bb / eps;
+I = 1/12*mb*L^2 + 1/4*(m1+m2)*L^2;
+aa = b/I;
+bb = (u_c*g*L)/(2*I);
+cc = ((m2-m1)*g*L)/(2*I);
+dd = L/(2*I);
+
 
 %% Nonlinear Model (ODE)
 nonlinear_ode = @(t, x) [
     x(2);
-    -aa*x(2) - bb*tanh(x(2)/eps) + cc*cos(x(1))
+    -aa*x(2) - bb*tanh(x(2)/eps) - cc*cos(x(1))
 ];
 
 %% Linearized Model around equilibrium theta_e and \theta_e_dot
@@ -31,18 +32,15 @@ theta_e = pi/2;
 theta_e_dot = 0;
 
 A = [ 0, 1;
-     -cc*sin(theta_e), -aa - (bb/eps)*sech(theta_e_dot/eps)^2 ];
-
-A = [ 0, 1;
--cc*sin(theta_e), -aa];
+-cc*sin(theta_e), -aa - bb/eps];
 
 B = [0; dd];
 
 linear_ode = @(t, x) A * (x) + B*u;
 
 %% Simulation Time and Initial Conditions
-tspan = linspace(0, 10, 500)';       % simulation time [s]
-x0    = [0; 0.5];       % initial state [theta (rad); theta_dot (rad/s)]
+tspan = linspace(0, 20, 1000)';       % simulation time [s]
+x0    = [4*pi/10; -4];       % initial state [theta (rad); theta_dot (rad/s)]
 x0_lin = x0 - [theta_e; theta_e_dot];
 
 %% Solve ODEs
@@ -67,7 +65,6 @@ xp_lims = [min(min(x_nl_total_d), min(x_lin_total_d))-0.1, max(max(x_nl_total_d)
 
 % Setup animation
 fig = figure;
-%set(fig, 'Position', [100 100 1000 800]);
 
 % Initialize plots
 % x'(t) vs t in position 1
@@ -92,10 +89,10 @@ hold on;
 
 % Evaluate the non linear vector field at each point
 dtheta = omega_grid;
-domega = -aa*omega_grid - bb*tanh(omega_grid/eps) + cc*cos(theta_grid);
+domega = -aa*omega_grid - bb*tanh(omega_grid/eps) - cc*cos(theta_grid);
 
 dtheta_l = omega_grid;
-domega_l = -cc * sin(theta_e) * (theta_grid - theta_e) - aa * (omega_grid - theta_e_dot);
+domega_l = -cc*sin(theta_e).*(theta_grid - theta_e) - aa.*(omega_grid - theta_e_dot);
 
 % Draw vector field
 q1 = quiver(theta_grid, omega_grid, dtheta_l, domega_l, 'g', 'AutoScale', 'on');
@@ -174,7 +171,7 @@ theta_nl = x_nl_total;
 theta_lin = x_lin_total;
 
 animation_step = 5;  % Match the same step as the other animations
-mass_scale = 20;     % Scale factor for marker size (reduced for subplot)
+mass_scale = 50;     % Scale factor for marker size (reduced for subplot)
 
 % Initial beam transformation and drawing
 theta_a_nl = theta_nl(1);
@@ -184,18 +181,19 @@ beam_a_nl = (roty(rad2deg(theta_a_nl)) * beam_nl')';
 beam_a_lin = (roty(rad2deg(theta_a_lin)) * beam_lin')';
 
 % Fixed pivot point
+offset = 0.2;
 plot3(0, 0, 0, 'ko', 'MarkerSize', 6, 'MarkerFaceColor', 'k');
-plot3(0, 0.1, 0, 'ko', 'MarkerSize', 6, 'MarkerFaceColor', 'k');
+plot3(0, offset, 0, 'ko', 'MarkerSize', 6, 'MarkerFaceColor', 'k');
 
 % Draw initial beam and store handle
 h_beam_nl = plot3(beam_a_nl(:,1), beam_a_nl(:,2), beam_a_nl(:,3), 'b-', 'LineWidth', 2);
-h_beam_lin = plot3(beam_a_lin(:,1), beam_a_lin(:,2)+0.1, beam_a_lin(:,3), 'g-', 'LineWidth', 2);
+h_beam_lin = plot3(beam_a_lin(:,1), beam_a_lin(:,2)+offset, beam_a_lin(:,3), 'g-', 'LineWidth', 2);
 
 % Create handles for the balls
-h1 = plot3(beam_a_nl(1,1), beam_a_nl(1,2), beam_a_nl(1,3), 'o', 'MarkerSize', mass_scale*m2, 'MarkerFaceColor', 'r', 'MarkerEdgeColor', 'k');
-h2 = plot3(beam_a_nl(2,1), beam_a_nl(2,2), beam_a_nl(2,3), 'o', 'MarkerSize', mass_scale*m1, 'MarkerFaceColor', 'b', 'MarkerEdgeColor', 'k');
-h3 = plot3(beam_a_lin(1,1), beam_a_lin(1,2)+0.1, beam_a_lin(1,3), 'o', 'MarkerSize', mass_scale*m2, 'MarkerFaceColor', 'm', 'MarkerEdgeColor', 'k');
-h4 = plot3(beam_a_lin(2,1), beam_a_lin(2,2)+0.1, beam_a_lin(2,3), 'o', 'MarkerSize', mass_scale*m1, 'MarkerFaceColor', 'c', 'MarkerEdgeColor', 'k');
+h1 = plot3(nan, nan, nan, 'o', 'MarkerSize', mass_scale*m2, 'MarkerFaceColor', 'r', 'MarkerEdgeColor', 'k');
+h2 = plot3(nan, nan, nan, 'o', 'MarkerSize', mass_scale*m1, 'MarkerFaceColor', 'b', 'MarkerEdgeColor', 'k');
+h3 = plot3(nan, nan, nan, 'o', 'MarkerSize', mass_scale*m2, 'MarkerFaceColor', 'm', 'MarkerEdgeColor', 'k');
+h4 = plot3(nan, nan, nan, 'o', 'MarkerSize', mass_scale*m1, 'MarkerFaceColor', 'c', 'MarkerEdgeColor', 'k');
 
 % Rotated graph of x(t) vs t in position 4 (x vertical, t horizontal)
 subplot(2,2,4);
@@ -216,7 +214,7 @@ h_dummy_nonlinear = plot(NaN, NaN, 'g-', 'LineWidth', 2, 'Visible', 'off');
 % Crear un objeto de línea invisible para la leyenda general
 h_dummy_linear = plot(NaN, NaN, 'b-', 'LineWidth', 2, 'Visible', 'off');
 h_dummy_nonlinear = plot(NaN, NaN, 'g-', 'LineWidth', 2, 'Visible', 'off');
-legend_h = legend([h_dummy_linear, h_dummy_nonlinear], {'Linear', 'Non-linear'}, 'Orientation', 'horizontal');
+legend_h = legend([h_dummy_linear, h_dummy_nonlinear], {'Non-Linear', 'Linear'}, 'Orientation', 'horizontal');
 set(legend_h, 'Units', 'normalized');
 set(legend_h, 'Position', [0.4, 0.02, 0.2, 0.05]);  % [x, y, ancho, alto]
 
@@ -224,10 +222,14 @@ set(legend_h, 'Position', [0.4, 0.02, 0.2, 0.05]);  % [x, y, ancho, alto]
 frame_step = 5;
 num_frames = length(tspan);
 pause_time = frame_step/num_frames;
+fig_handle = true;
 
 % Run animation loop until window is closed
 while ishandle(fig)
     for k = 1:frame_step:num_frames
+        if ~ishandle(fig)
+          fig_handle = false;
+        end
         current_t = tspan(k);
 
         % Nonlinear model current values
@@ -259,13 +261,13 @@ while ishandle(fig)
 
         % Update beam positions
         set(h_beam_nl, 'XData', beam_a_nl(:,1), 'YData', beam_a_nl(:,2), 'ZData', beam_a_nl(:,3));
-        set(h_beam_lin, 'XData', beam_a_lin(:,1), 'YData', beam_a_lin(:,2)+0.1, 'ZData', beam_a_lin(:,3));
+        set(h_beam_lin, 'XData', beam_a_lin(:,1), 'YData', beam_a_lin(:,2)+offset, 'ZData', beam_a_lin(:,3));
 
         % Update ball positions
         set(h1, 'XData', beam_a_nl(1,1), 'YData', beam_a_nl(1,2), 'ZData', beam_a_nl(1,3));
         set(h2, 'XData', beam_a_nl(2,1), 'YData', beam_a_nl(2,2), 'ZData', beam_a_nl(2,3));
-        set(h3, 'XData', beam_a_lin(1,1), 'YData', beam_a_lin(1,2)+0.1, 'ZData', beam_a_lin(1,3));
-        set(h4, 'XData', beam_a_lin(2,1), 'YData', beam_a_lin(2,2)+0.1, 'ZData', beam_a_lin(2,3));
+        set(h3, 'XData', beam_a_lin(1,1), 'YData', beam_a_lin(1,2)+offset, 'ZData', beam_a_lin(1,3));
+        set(h4, 'XData', beam_a_lin(2,1), 'YData', beam_a_lin(2,2)+offset, 'ZData', beam_a_lin(2,3));
 
         % Update 3D title
         subplot(2,2,3);
@@ -288,5 +290,9 @@ while ishandle(fig)
         % Speed control and rendering
         pause(pause_time);
         drawnow;
+    end
+        % Break outer loop if figure closed
+    if ~fig_handle
+        break;
     end
 end
