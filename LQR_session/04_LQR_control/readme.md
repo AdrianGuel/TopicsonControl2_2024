@@ -4,6 +4,7 @@
 
 This project implements a Linear Quadratic Regulator (LQR) controller for stabilizing a seesaw (balancing beam) system. The simulation visualizes the system dynamics in a phase space diagram and provides a 3D animation of the beam movement over time.
 
+![image](https://github.com/user-attachments/assets/eaa75e8a-8055-4564-90fc-0fe3884c7c33)
 
 
 ## System Description
