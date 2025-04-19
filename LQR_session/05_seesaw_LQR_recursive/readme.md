@@ -55,6 +55,7 @@ end
 ## Visualization of $P_k$ and $K_k$
 
 The first figure plots each element of the gain vector $K_k = [K_{k,1}, K_{k,2}]$ and the symmetric entries of $P_k$ (namely $P_{11}, P_{12}=P_{21}, P_{22}$) over time $t = k\,T_s$.
+
 ![image](https://github.com/user-attachments/assets/dfc8e51e-8a3b-4ac4-8801-0fa287dc8b2e)
 ---
 
